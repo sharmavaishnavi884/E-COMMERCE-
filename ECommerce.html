@@ -1,0 +1,86 @@
+import SwiftUI
+
+struct Product: Identifiable {
+    let id: Int
+    let name: String
+    let price: Double
+    let description: String
+}
+
+struct ContentView: View {
+    let products: [Product] = [
+        Product(id: 1, name: "Product 1", price: 19.99, description: "Description of Product 1"),
+        Product(id: 2, name: "Product 2", price: 29.99, description: "Description of Product 2"),
+        Product(id: 3, name: "Product 3", price: 39.99, description: "Description of Product 3")
+    ]
+    
+    @State private var cartItems: [Product] = []
+    
+    var body: some View {
+        NavigationView {
+            List(products) { product in
+                NavigationLink(destination: ProductDetailView(product: product, addToCart: addToCart)) {
+                    ProductRow(product: product)
+                }
+            }
+            .navigationBarTitle("Products")
+            .navigationBarItems(trailing: Button(action: {
+                // Show Cart
+            }) {
+                Image(systemName: "cart")
+            })
+        }
+    }
+    
+    func addToCart(product: Product) {
+        cartItems.append(product)
+    }
+}
+
+struct ProductRow: View {
+    let product: Product
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(product.name)
+                .font(.headline)
+            Text("$\(product.price)")
+                .foregroundColor(.secondary)
+        }
+    }
+}
+
+struct ProductDetailView: View {
+    let product: Product
+    let addToCart: (Product) -> Void
+    
+    var body: some View {
+        VStack {
+            Text(product.name)
+                .font(.title)
+            Text("$\(product.price)")
+                .foregroundColor(.secondary)
+            Text(product.description)
+                .padding()
+            Spacer()
+            Button(action: {
+                addToCart(product)
+            }) {
+                Text("Add to Cart")
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
+            Spacer()
+        }
+        .padding()
+        .navigationBarTitle(Text(product.name), displayMode: .inline)
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
+}
